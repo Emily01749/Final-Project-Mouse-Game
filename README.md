@@ -1,1 +1,1 @@
-# Final-Project-Mouse-Game
+# Final Project: Mouse Game

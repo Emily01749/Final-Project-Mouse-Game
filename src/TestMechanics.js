@@ -1,8 +1,13 @@
-export class Tmp extends Phaser.Scene {
+export class TestMechanics extends Phaser.Scene {
 
     constructor() {
-        super('Tmp');
+        super('TestMechanics');
     }
+
+    // Assets
+    // https://sfrisk.itch.io/midnight-lilac-tileset
+    // https://toffeecraft.itch.io/cat-pixel-mega-pack
+    // https://toffeecraft.itch.io/cat-pack
 
     // -----------------------------------------------------------------------------
     // --------------------------------- Scene  ------------------------------------
@@ -126,6 +131,16 @@ export class Tmp extends Phaser.Scene {
         });
     }
 
+    cheeseObjCollisions(player, cheese){
+        this.setupObjCollisions(cheese);
+
+        this.physics.add.collider(player, cheese, (plyer, chese) => {
+            console.log("Player touched cheese");
+            chese.body.enable = false;
+            this.winLevel();
+        });
+    }
+
     bowlObjCollisions(player, catBowl){
 
         this.setupObjCollisions(catBowl);
@@ -145,7 +160,7 @@ export class Tmp extends Phaser.Scene {
         });
     }
 
-    catCollisions(player, cat, playerHP){
+    catCollisions(player, cat){
 
         player.body.onOverlap = true;
 
@@ -154,17 +169,16 @@ export class Tmp extends Phaser.Scene {
             c.setAlpha(0.5);
 
             if(this.playerHealth > 0){
-                this.playerHealth -= 1;
+                this.playerHealth -= 0.05;
             }
             else{
                 this.playerHealth = 0;
+                this.gameOver();
             }
 
             console.log(this.playerHealth);
 
-            this.healthDisplayText.text = "(Health Bar): " + this.playerHealth;
-
-            this.gameOver();
+            this.healthDisplayText.text = "(Health Bar): " + this.playerHealth.toFixed(2);
 
         });
     }
@@ -172,6 +186,10 @@ export class Tmp extends Phaser.Scene {
     // -----------------------------------------------------------------------------
     // --------------------------------- Game Over  --------------------------------
     // -----------------------------------------------------------------------------
+
+    winLevel(){
+        this.scene.start("LevelCompleted");
+    }
 
     gameOver(){
         if(this.playerHealth == 0){
@@ -207,6 +225,15 @@ export class Tmp extends Phaser.Scene {
         // Floor
         this.load.image("floors-ts", "assets/Floor.png");
 
+        
+        this.load.spritesheet("catFurniture-ts", "assets/Furnitures.png",{
+            frameWidth: 32,
+            frameHeight: 32,
+            spacing: 0,
+            startFrame: 26,
+            endFrame: 26
+        });
+
         // Load Objects
         this.load.spritesheet("foodBowls-ts", "assets/CatBowls.png", {
             frameWidth: 16, 
@@ -215,6 +242,15 @@ export class Tmp extends Phaser.Scene {
             startFrame: 0,
             endFrame: 0
         });
+
+        this.load.spritesheet("furniture-ts", "assets/Furnitures.png", {
+            frameWidth: 32, 
+            frameHeight: 32, 
+            spacing: 0, 
+            startFrame: 116,
+            endFrame: 116
+        });
+
 
 
         // Level Tilemap (Subject to Change)
@@ -236,6 +272,7 @@ export class Tmp extends Phaser.Scene {
 
         // Object Layers
         this.bowlsObj = this.tempMap.createFromObjects("foodBowls", {gid : 19, key: "foodBowls-ts"});
+        this.cheeseObj = this.tempMap.createFromObjects("cheese", {gid : 136, key : "furniture-ts"});
 
         // --------------- Timer ---------------
         this.createTimer(650, 170);
@@ -259,6 +296,8 @@ export class Tmp extends Phaser.Scene {
         // Player collides with cat bowl
         // Parameters: player, catBowl
         this.bowlObjCollisions(this.player, this.bowlsObj, this.playerHealth);
+
+        this.cheeseObjCollisions(this.player, this.cheeseObj);
 
         this.catCollisions(this.player, this.cat, this.playerHealth);
 

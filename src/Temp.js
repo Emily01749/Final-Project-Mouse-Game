@@ -36,6 +36,52 @@ export class Tmp extends Phaser.Scene {
         this.healthDisplayText.setScrollFactor(0);
     }
 
+    // -----------
+    // Timer
+    // -----------
+    
+    // Timer Formatting: https://phaser.discourse.group/t/countdown-timer/2471/4
+
+    createTimer(x , y){
+        this.initialTime = 90;
+
+        this.timerText = this.add.text(x , y, "(Time): " + this.formatTimer(this.initialTime), {
+            fontSize: "32px",
+            fontFamily : "Courtier New",
+            color : "black"
+        }).setOrigin(0.5);
+
+        this.timerText.setScrollFactor(0);
+
+        this.timedEvent = this.time.addEvent({
+            delay: 800, 
+            callback: this.updateTimer, 
+            callbackScope: this, 
+            loop: true
+        });
+    }
+
+    formatTimer(secs){
+        var mins = Math.floor(secs/60);
+        var seconds = secs % 60;
+
+        seconds = seconds.toString().padStart(2, '0');
+
+        return `${mins}:${seconds}`;
+    }
+
+    updateTimer(){
+        this.initialTime -= 1;
+
+        console.log()
+
+        if(this.initialTime < 0){
+            this.initialTime = 0;
+        }
+
+        this.timerText.setText('(Timer): ' + this.formatTimer(this.initialTime));
+    }
+
 
     // -----------------------------------------------------------------------------
     // --------------------------------- Player ------------------------------------
@@ -187,7 +233,6 @@ export class Tmp extends Phaser.Scene {
 
     create() {
 
-
         // --------------- TileMap ---------------
         this.tempMap = this.make.tilemap({key: 'temporary-tilemap'});
 
@@ -201,6 +246,10 @@ export class Tmp extends Phaser.Scene {
 
         // Object Layers
         this.bowlsObj = this.tempMap.createFromObjects("foodBowls", {gid : 19, key: "foodBowls-ts"});
+
+        // --------------- Timer ---------------
+        this.createTimer(650, 170);
+
 
         // --------------- Player ---------------
 
@@ -236,7 +285,7 @@ export class Tmp extends Phaser.Scene {
         this.playerMovement(1000);
 
         if(this.playerHealth == 4){
-            
+
             this.physics.moveToObject(this.cat, this.player, 100);
             
         }

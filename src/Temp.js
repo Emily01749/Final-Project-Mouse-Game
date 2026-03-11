@@ -138,7 +138,7 @@ export class Tmp extends Phaser.Scene {
 
             this.playerHealth -= 1;
 
-            this.healthDisplayText.text = "Hearts: " + this.playerHealth;
+            this.healthDisplayText.text = "(Health Bar): " + this.playerHealth;
 
             this.gameOver();
 
@@ -162,7 +162,7 @@ export class Tmp extends Phaser.Scene {
 
             console.log(this.playerHealth);
 
-            this.healthDisplayText.text = "Hearts: " + this.playerHealth;
+            this.healthDisplayText.text = "(Health Bar): " + this.playerHealth;
 
             this.gameOver();
 

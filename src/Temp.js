@@ -62,18 +62,16 @@ export class Tmp extends Phaser.Scene {
     }
 
     formatTimer(secs){
-        var mins = Math.floor(secs/60);
-        var seconds = secs % 60;
+        this.mins = Math.floor(secs/60);
+        this.seconds = secs % 60;
 
-        seconds = seconds.toString().padStart(2, '0');
+        this.seconds = this.seconds.toString().padStart(2, '0');
 
-        return `${mins}:${seconds}`;
+        return `${this.mins}:${this.seconds}`;
     }
 
     updateTimer(){
         this.initialTime -= 1;
-
-        console.log()
 
         if(this.initialTime < 0){
             this.initialTime = 0;
@@ -149,18 +147,10 @@ export class Tmp extends Phaser.Scene {
 
     catCollisions(player, cat, playerHP){
 
-         player.body.onOverlap = true;
-        /*this.physics.world.overlap(player, cat, (p,c) => {
-            console.log("Player overlap cat");
+        player.body.onOverlap = true;
 
+        this.physics.add.overlap(player, cat, (p, c) => {
 
-            this.playerHealth -= 1;
-        });*/
-
-        console.log(this.playerHealth);
-
-        this.physics.add.overlap(player, cat, (p, c) =>
-        {
             c.setAlpha(0.5);
 
             if(this.playerHealth > 0){
@@ -184,7 +174,7 @@ export class Tmp extends Phaser.Scene {
     // -----------------------------------------------------------------------------
 
     gameOver(){
-        if(this.playerHealth < 0 || this.playerHealth == 0){
+        if(this.playerHealth == 0){
             this.scene.start("GameOver");
         }
     }
@@ -250,7 +240,6 @@ export class Tmp extends Phaser.Scene {
         // --------------- Timer ---------------
         this.createTimer(650, 170);
 
-
         // --------------- Player ---------------
 
         // Temporary as a cat (change to mouse later)
@@ -284,7 +273,7 @@ export class Tmp extends Phaser.Scene {
         // Parameters: speed
         this.playerMovement(1000);
 
-        if(this.playerHealth == 4){
+        if(this.seconds > 30){
 
             this.physics.moveToObject(this.cat, this.player, 100);
             

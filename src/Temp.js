@@ -8,17 +8,41 @@ export class Tmp extends Phaser.Scene {
     // --------------------------------- Scene  ------------------------------------
     // -----------------------------------------------------------------------------
     
-    // Camera follows the player around
+    // -----------
+    // Camera
+    // -----------
+    // Follows the player around
+    // Can zoom in on player
     camera(map, player, zoom){
         this.cameras.main.setBounds(0, 0, map.widthInPixels, map.heightInPixels).setZoom(zoom);
         this.cameras.main.startFollow(player, true, 0.1, 0.1);
     }
+
+    // -----------
+    // UI: Text
+    // -----------
+
+    // Can change to actual health bar or something later if want to
+    displayHealth( x , y){
+
+        this.playerHealth = 5;
+
+        this.healthDisplayText = this.add.text(x , y, "(Health Bar): " + this.playerHealth, {
+            fontSize: "32px",
+            fontFamily : "Courtier New",
+            color : "black"
+        }).setOrigin(0.5);
+
+        this.healthDisplayText.setScrollFactor(0);
+    }
+
 
     // -----------------------------------------------------------------------------
     // --------------------------------- Player ------------------------------------
     // -----------------------------------------------------------------------------
 
     // Moves the player around the map
+    // Controls: WSAD keyboard
     playerMovement(speed){
 
         //Add keyboard input for player controls
@@ -44,9 +68,12 @@ export class Tmp extends Phaser.Scene {
     }
 
     // -----------------------------------------------------------------------------
-    // --------------------------------- Objects ------------------------------------
+    // --------------------------------- Objects -----------------------------------
     // -----------------------------------------------------------------------------
 
+    // -----------
+    // Collisions
+    // -----------
     setupObjCollisions(objects){
         objects.forEach(obj => {
             this.physics.world.enable(obj);
@@ -55,16 +82,82 @@ export class Tmp extends Phaser.Scene {
         });
     }
 
-    bowlObjCollisions(player, bowl){
-        
-        this.setupObjCollisions(bowl);
+    bowlObjCollisions(player, catBowl){
 
-        this.physics.add.collider(player, bowl, ()=>{
-            console.log("Player touched bowl");
+        this.setupObjCollisions(catBowl);
+   
+        this.physics.add.collider(player, catBowl, (player, bowl)=>{
+            console.log("Player touched object");
+
+            bowl.setVisible(false);
+            bowl.body.enable = false;
+
+            this.playerHealth -= 1;
+
+            this.healthDisplayText.text = "Hearts: " + this.playerHealth;
+
+            this.gameOver();
+
         });
     }
 
+    catCollisions(player, cat, playerHP){
+
+         player.body.onOverlap = true;
+        /*this.physics.world.overlap(player, cat, (p,c) => {
+            console.log("Player overlap cat");
+
+
+            this.playerHealth -= 1;
+        });*/
+
+        console.log(this.playerHealth);
+
+        this.physics.add.overlap(player, cat, (p, c) =>
+        {
+            c.setAlpha(0.5);
+
+            if(this.playerHealth > 0){
+                this.playerHealth -= 1;
+            }
+            else{
+                this.playerHealth = 0;
+            }
+
+            console.log(this.playerHealth);
+
+            this.healthDisplayText.text = "Hearts: " + this.playerHealth;
+
+            this.gameOver();
+
+        });
+    }
+
+    // -----------------------------------------------------------------------------
+    // --------------------------------- Game Over  --------------------------------
+    // -----------------------------------------------------------------------------
+
+    gameOver(){
+        if(this.playerHealth < 0 || this.playerHealth == 0){
+            this.scene.start("GameOver");
+        }
+    }
+
+
+    // -----------------------------------------------------------------------------
+    // --------------------------- Main Stuff for Level  ---------------------------
+    // -----------------------------------------------------------------------------
+
     preload() {
+
+        // Load the Mouse
+        this.load.spritesheet("mouse-ts", "assets/Mouse-Sheet.png", {
+            frameWidth: 32,
+            frameHeight: 32,
+            spacing: 0,
+            startFrame: 0,
+            endFrame: 0
+        });
 
         // Load the Cat from the Spritesheet
         this.load.spritesheet("cat-ts", "assets/IdleCat.png", {
@@ -95,27 +188,63 @@ export class Tmp extends Phaser.Scene {
     create() {
 
 
-        //Adding tile map
+        // --------------- TileMap ---------------
         this.tempMap = this.make.tilemap({key: 'temporary-tilemap'});
 
-        this.floor = this.tempMap.addTilesetImage('Floor', 'floors-ts');
+        // ---------------
+        // Tilemap Layers
+        // ---------------
 
+        // Tile Layers
+        this.floor = this.tempMap.addTilesetImage('Floor', 'floors-ts');
         this.floorLayer = this.tempMap.createLayer("floor", this.floor);
 
+        // Object Layers
         this.bowlsObj = this.tempMap.createFromObjects("foodBowls", {gid : 19, key: "foodBowls-ts"});
 
-        //Adding player
+        // --------------- Player ---------------
 
         // Temporary as a cat (change to mouse later)
-        this.player = this.physics.add.sprite(350,600,"cat-ts");
+        this.player = this.physics.add.sprite(350,600,"mouse-ts");
         // this.player.setCollideWorldBounds(true);
 
-        this.bowlObjCollisions(this.player, this.bowlsObj);
+        // --------------- Enemy / Trap ---------------
+
+        this.cat = this.physics.add.sprite(500, 600, "cat-ts");
+
+        // --------------- Object Collisions ---------------
+
+        // Display Health Bar
+        // Parameters: x, y, amount Of Player Health
+        this.displayHealth(400, 170, this.playerHealth);
+
+        // Player collides with cat bowl
+        // Parameters: player, catBowl
+        this.bowlObjCollisions(this.player, this.bowlsObj, this.playerHealth);
+
+        this.catCollisions(this.player, this.cat, this.playerHealth);
+
     }
 
     update() {
+        // Sets up the Camera
+        // Parameters: tilemap, player, zoom
+        this.camera(this.tempMap, this.player, 1.55);
+
+        // Moves the player; Keyboard Controls: W A S D
+        // Parameters: speed
         this.playerMovement(1000);
-        this.camera(this.tempMap, this.player, 1.65);
+
+        if(this.playerHealth == 4){
+            
+            this.physics.moveToObject(this.cat, this.player, 100);
+            
+        }
+        else{
+            this.cat.setVelocityX(0);
+            this.cat.setVelocityY(0);
+        }
+       
     }
     
 }

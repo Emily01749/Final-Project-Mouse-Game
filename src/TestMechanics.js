@@ -30,9 +30,7 @@ export class TestMechanics extends Phaser.Scene {
     // Can change to actual health bar or something later if want to
     displayHealth( x , y){
 
-        this.playerHealth = 5;
-
-        this.healthDisplayText = this.add.text(x , y, "(Health Bar): " + this.playerHealth, {
+        this.healthDisplayText = this.add.text(x , y, "(Health Bar): " + this.player.health, {
             fontSize: "32px",
             fontFamily : "Courtier New",
             color : "black"
@@ -48,7 +46,8 @@ export class TestMechanics extends Phaser.Scene {
     // Timer Formatting: https://phaser.discourse.group/t/countdown-timer/2471/4
 
     createTimer(x , y){
-        this.initialTime = 90;
+        //this.initialTime = 90;
+        this.initialTime = 10;
 
         this.timerText = this.add.text(x , y, "(Time): " + this.formatTimer(this.initialTime), {
             fontSize: "32px",
@@ -132,10 +131,11 @@ export class TestMechanics extends Phaser.Scene {
     }
 
     cheeseObjCollisions(player, cheese){
+        this.cheeseCollided = false;
         this.setupObjCollisions(cheese);
 
         this.physics.add.collider(player, cheese, (plyer, chese) => {
-            console.log("Player touched cheese");
+            this.cheeseCollided = true;
             chese.body.enable = false;
             this.winLevel();
         });
@@ -143,17 +143,18 @@ export class TestMechanics extends Phaser.Scene {
 
     bowlObjCollisions(player, catBowl){
 
+        this.bowlCollided = false;
         this.setupObjCollisions(catBowl);
    
         this.physics.add.collider(player, catBowl, (player, bowl)=>{
-            console.log("Player touched object");
+            this.bowlCollided = true;
 
             bowl.setVisible(false);
             bowl.body.enable = false;
 
-            this.playerHealth -= 1;
+            this.player.health -= 0.05;
 
-            this.healthDisplayText.text = "(Health Bar): " + this.playerHealth;
+            this.healthDisplayText.text = "(Health Bar): " + this.player.health.toFixed(2);
 
             this.gameOver();
 
@@ -162,29 +163,61 @@ export class TestMechanics extends Phaser.Scene {
 
     catCollisions(player, cat){
 
+        this.catCollided = false;
         player.body.onOverlap = true;
 
         this.physics.add.overlap(player, cat, (p, c) => {
+            this.catCollided = true;
 
             c.setAlpha(0.5);
 
-            if(this.playerHealth > 0){
-                this.playerHealth -= 0.05;
-            }
-            else{
-                this.playerHealth = 0;
-                this.gameOver();
-            }
+            //if(this.player.health > 0){
+            this.player.health -= 0.05;
+            //}
+            //else{
+            //    this.player.health = 0;
+            //    this.gameOver();
+            //}
 
-            console.log(this.playerHealth);
-
-            this.healthDisplayText.text = "(Health Bar): " + this.playerHealth.toFixed(2);
+            this.healthDisplayText.text = "(Health Bar): " + this.player.health.toFixed(2);
 
         });
     }
 
+    itemsCollisions(player, healthItem, speedItem){
+
+        this.healthItemCollided = false;
+        this.speedItemCollided = false;
+
+        this.setupObjCollisions(healthItem);
+        this.setupObjCollisions(speedItem);
+
+        this.physics.add.collider(player, healthItem, (plyr, h)=>{
+            this.healthItemCollided = true;
+
+            h.setVisible(false);
+            h.body.enable = false;
+
+            if(this.player.health < 5 && !(this.player.health > 5)){
+                this.player.health += 0.05;
+                this.healthDisplayText.text = "(Health Bar): " + this.player.health.toFixed(2);
+            }
+
+        });
+
+        this.physics.add.collider(player, speedItem, (plyr, s)=>{
+            this.speedItemCollided = true;
+
+            s.setVisible(false);
+            s.body.enable = false;
+
+            this.player.speed += 100;
+            
+        });
+    }
+
     // -----------------------------------------------------------------------------
-    // --------------------------------- Game Over  --------------------------------
+    // --------------------------------- Win / Game Over  --------------------------
     // -----------------------------------------------------------------------------
 
     winLevel(){
@@ -192,7 +225,7 @@ export class TestMechanics extends Phaser.Scene {
     }
 
     gameOver(){
-        if(this.playerHealth == 0){
+        if(this.player.health <= 0 || this.initialTime == 0){
             this.scene.start("GameOver");
         }
     }
@@ -243,7 +276,7 @@ export class TestMechanics extends Phaser.Scene {
             endFrame: 0
         });
 
-        this.load.spritesheet("furniture-ts", "assets/Furnitures.png", {
+        this.load.spritesheet("cheese-ts", "assets/Furnitures.png", {
             frameWidth: 32, 
             frameHeight: 32, 
             spacing: 0, 
@@ -251,7 +284,21 @@ export class TestMechanics extends Phaser.Scene {
             endFrame: 116
         });
 
+        this.load.spritesheet("health+-ts", "assets/Furnitures.png", {
+            frameWidth: 32, 
+            frameHeight: 32, 
+            spacing: 0, 
+            startFrame: 228,
+            endFrame: 228
+        });
 
+        this.load.spritesheet("speed+-ts", "assets/Furnitures.png", {
+            frameWidth: 32, 
+            frameHeight: 32, 
+            spacing: 0, 
+            startFrame: 242,
+            endFrame: 242
+        });
 
         // Level Tilemap (Subject to Change)
         this.load.tilemapTiledJSON('temporary-tilemap', 'assets/Map-tmp.tmj');
@@ -272,7 +319,9 @@ export class TestMechanics extends Phaser.Scene {
 
         // Object Layers
         this.bowlsObj = this.tempMap.createFromObjects("foodBowls", {gid : 19, key: "foodBowls-ts"});
-        this.cheeseObj = this.tempMap.createFromObjects("cheese", {gid : 136, key : "furniture-ts"});
+        this.healthItemObj = this.tempMap.createFromObjects("health+", {gid : 248, key: "health+-ts"});
+        this.speedItemObj = this.tempMap.createFromObjects("speed+", {gid : 262, key: "speed+-ts"});
+        this.cheeseObj = this.tempMap.createFromObjects("cheese", {gid : 136, key : "cheese-ts"});
 
         // --------------- Timer ---------------
         this.createTimer(650, 170);
@@ -282,6 +331,8 @@ export class TestMechanics extends Phaser.Scene {
         // Temporary as a cat (change to mouse later)
         this.player = this.physics.add.sprite(350,600,"mouse-ts");
         // this.player.setCollideWorldBounds(true);
+        this.player.speed = 50;
+        this.player.health = 5.00;
 
         // --------------- Enemy / Trap ---------------
 
@@ -291,15 +342,17 @@ export class TestMechanics extends Phaser.Scene {
 
         // Display Health Bar
         // Parameters: x, y, amount Of Player Health
-        this.displayHealth(400, 170, this.playerHealth);
+        this.displayHealth(400, 170, this.player.health);
 
         // Player collides with cat bowl
         // Parameters: player, catBowl
-        this.bowlObjCollisions(this.player, this.bowlsObj, this.playerHealth);
+        this.bowlObjCollisions(this.player, this.bowlsObj, this.player.health);
 
         this.cheeseObjCollisions(this.player, this.cheeseObj);
 
-        this.catCollisions(this.player, this.cat, this.playerHealth);
+        this.catCollisions(this.player, this.cat, this.player.health);
+
+        this.itemsCollisions(this.player, this.healthItemObj, this.speedItemObj);
 
     }
 
@@ -310,18 +363,41 @@ export class TestMechanics extends Phaser.Scene {
 
         // Moves the player; Keyboard Controls: W A S D
         // Parameters: speed
-        this.playerMovement(1000);
+        this.playerMovement(this.player.speed);
 
-        if(this.seconds > 30){
+        if(this.seconds > 10){
 
             this.physics.moveToObject(this.cat, this.player, 100);
             
         }
-        else{
+
+        /*else{
             this.cat.setVelocityX(0);
             this.cat.setVelocityY(0);
-        }
+        }*/
+
+        //GameOver when timer is 00:00
+        this.gameOver(); //checks player health & timer
+
+        this.testCollision();
        
     }
+
+    // -----------------------------------------------------------------------------------
+    // --------------------------------- Testing Stuff -----------------------------------
+    // -----------------------------------------------------------------------------------
     
+    testCollision(){
+        if(this.catCollided){
+            console.log("cat/player collided");
+            console.log(this.player.health);
+        }
+        if(this.bowlCollided){
+            console.log("Player touched bowl");
+        }
+        if(this.cheeseCollided){
+            console.log("Player touched cheese");
+        }
+    }
+
 }

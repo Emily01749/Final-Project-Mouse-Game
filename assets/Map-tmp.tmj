@@ -78,8 +78,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":384.192864030858,
-                 "y":448.738669238187
+                 "x":384.193,
+                 "y":448.739
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -101,8 +101,54 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":672.815060908084,
-                 "y":481.116279069767
+                 "x":672.815,
+                 "y":481.116
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":7,
+         "name":"health+",
+         "objects":[
+                {
+                 "gid":248,
+                 "height":32,
+                 "id":31,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":319.400314563605,
+                 "y":576.376723847965
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
+         "id":8,
+         "name":"speed+",
+         "objects":[
+                {
+                 "gid":262,
+                 "height":32,
+                 "id":32,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":415.191223983513,
+                 "y":576.2114390665
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -110,8 +156,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":7,
- "nextobjectid":31,
+ "nextlayerid":9,
+ "nextobjectid":33,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",
@@ -203,6 +249,78 @@
                 }, 
                 {
                  "id":116,
+                 "properties":[
+                        {
+                         "name":"collides",
+                         "type":"bool",
+                         "value":true
+                        }]
+                }, 
+                {
+                 "id":226,
+                 "properties":[
+                        {
+                         "name":"collides",
+                         "type":"bool",
+                         "value":true
+                        }]
+                }, 
+                {
+                 "id":227,
+                 "properties":[
+                        {
+                         "name":"collides",
+                         "type":"bool",
+                         "value":true
+                        }]
+                }, 
+                {
+                 "id":228,
+                 "properties":[
+                        {
+                         "name":"collides",
+                         "type":"bool",
+                         "value":true
+                        }]
+                }, 
+                {
+                 "id":229,
+                 "properties":[
+                        {
+                         "name":"collides",
+                         "type":"bool",
+                         "value":true
+                        }]
+                }, 
+                {
+                 "id":242,
+                 "properties":[
+                        {
+                         "name":"collides",
+                         "type":"bool",
+                         "value":true
+                        }]
+                }, 
+                {
+                 "id":243,
+                 "properties":[
+                        {
+                         "name":"collides",
+                         "type":"bool",
+                         "value":true
+                        }]
+                }, 
+                {
+                 "id":244,
+                 "properties":[
+                        {
+                         "name":"collides",
+                         "type":"bool",
+                         "value":true
+                        }]
+                }, 
+                {
+                 "id":245,
                  "properties":[
                         {
                          "name":"collides",

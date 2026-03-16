@@ -94,7 +94,6 @@ export class TestMechanics extends Phaser.Scene {
         this.timerText.setText('(Timer): ' + this.formatTimer(this.initialTime));
     }
 
-
     // -----------------------------------------------------------------------------
     // --------------------------------- Player ------------------------------------
     // -----------------------------------------------------------------------------
@@ -254,6 +253,10 @@ export class TestMechanics extends Phaser.Scene {
         this.setupObjCollisions(speedItem);
         this.setupObjCollisions(scoreItem);
 
+        // ---------------
+        // Health Items
+        // ---------------
+
         this.physics.add.collider(player, healthItem, (plyr, hlth)=>{
             this.healthItemCollided = true;
 
@@ -267,6 +270,10 @@ export class TestMechanics extends Phaser.Scene {
 
         });
 
+        // ---------------
+        // Speed Items
+        // ---------------
+
         this.physics.add.collider(player, speedItem, (plyr, sped)=>{
             this.speedItemCollided = true;
 
@@ -276,6 +283,10 @@ export class TestMechanics extends Phaser.Scene {
             this.player.speed += 100;
             
         });
+
+        // ---------------
+        // Score Items
+        // ---------------
 
         this.physics.add.collider(player, scoreItem, (plyr, scre) => {
             this.scoreItemCollided = true;
@@ -295,7 +306,10 @@ export class TestMechanics extends Phaser.Scene {
     // ------------------------------------------------------------------------------
 
     winLevel(){
-        this.scene.start("LevelCompleted");
+        this.bestTime = this.mins + " : " + this.seconds;
+        this.bestScore = this.player.score;
+
+        this.scene.start("TestLevelCompleted", {bestTime : this.bestTime, bestScore : this.bestScore});
     }
 
     gameOver(){
@@ -305,7 +319,10 @@ export class TestMechanics extends Phaser.Scene {
             loop: false,
             callback: () => {
                 if(this.player.health <= 0 || this.initialTime == 0){
-                    this.scene.start("GameOver");
+                    this.bestTime = this.mins + " : " + this.seconds;
+                    this.bestScore = this.player.score;
+
+                    this.scene.start("TestGameOver", {bestTime : this.bestTime, bestScore : this.bestScore});
                 }
             },
             callbackScope: this
@@ -421,7 +438,7 @@ export class TestMechanics extends Phaser.Scene {
 
         // --------------- Player ---------------
 
-        // Temporary as a cat (change to mouse later)
+        // Mouse Sprite
         this.player = this.physics.add.sprite(350,600,"mouse-ts");
 
         //Adjusts player movment

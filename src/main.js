@@ -1,4 +1,6 @@
-import {TestMechanics} from './TestMechanics.js'
+import { TestMechanics } from './TestMechanics.js';
+import { TestLevelCompleted } from './TestLevelCompleted.js';
+import { TestGameOver } from './TestGameOver.js';
 import { Start } from './scenes/Start.js';
 import { Level1 } from './scenes/Level1.js';
 import { Level2} from './scenes/Level2.js';
@@ -17,6 +19,8 @@ const config = {
     pixelArt: false,
     scene: [
         TestMechanics,
+        TestGameOver,
+        TestLevelCompleted,
         Start,
         Level1,
         Level2,

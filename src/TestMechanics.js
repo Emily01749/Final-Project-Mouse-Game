@@ -46,8 +46,7 @@ export class TestMechanics extends Phaser.Scene {
     // Timer Formatting: https://phaser.discourse.group/t/countdown-timer/2471/4
 
     createTimer(x , y){
-        //this.initialTime = 90;
-        this.initialTime = 10;
+        this.initialTime = 60;
 
         this.timerText = this.add.text(x , y, "(Time): " + this.formatTimer(this.initialTime), {
             fontSize: "32px",
@@ -96,20 +95,39 @@ export class TestMechanics extends Phaser.Scene {
         //Add keyboard input for player controls
         this.playerKeys = this.input.keyboard.addKeys({up: "W", down: "S", left: "A", right: "D"});
 
+        var countDownPress = 0;
+
+        if(this.playerKeys.up.isDown){
+            countDownPress++;
+        }
+        if(this.playerKeys.down.isDown){
+            countDownPress++;
+        }
+        if(this.playerKeys.left.isDown){
+            countDownPress++;
+        }
+        if(this.playerKeys.right.isDown){
+            countDownPress++;
+        }
+
+        if(countDownPress > 1){
+            speed = speed/Math.sqrt(2);
+        }
+
         // Sets velocity for up, down, left, right, otherwise 0 for idle
         if(this.playerKeys.up.isDown){
-            this.player.setVelocityY(-speed/2);
+            this.player.setVelocityY(-speed);
         }
-        else if(this.playerKeys.down.isDown){
-            this.player.setVelocityY(speed/2);
+        if(this.playerKeys.down.isDown){
+            this.player.setVelocityY(speed);
         }
-        else if(this.playerKeys.left.isDown){
-            this.player.setVelocityX(-speed/2);
+        if(this.playerKeys.left.isDown){
+            this.player.setVelocityX(-speed);
         }
-        else if(this.playerKeys.right.isDown){
-            this.player.setVelocityX(speed/2);
+        if(this.playerKeys.right.isDown){
+            this.player.setVelocityX(speed);
         }
-        else{
+        if(countDownPress == 0){
             this.player.setVelocityX(0);
             this.player.setVelocityY(0);
         }
@@ -148,9 +166,6 @@ export class TestMechanics extends Phaser.Scene {
    
         this.physics.add.collider(player, catBowl, (player, bowl)=>{
             this.bowlCollided = true;
-
-            bowl.setVisible(false);
-            bowl.body.enable = false;
 
             this.player.health -= 0.05;
 
@@ -216,9 +231,9 @@ export class TestMechanics extends Phaser.Scene {
         });
     }
 
-    // -----------------------------------------------------------------------------
-    // --------------------------------- Win / Game Over  --------------------------
-    // -----------------------------------------------------------------------------
+    // ------------------------------------------------------------------------------
+    // ------------------------------ Win / Game Over  ------------------------------
+    // ------------------------------------------------------------------------------
 
     winLevel(){
         this.scene.start("LevelCompleted");
@@ -284,7 +299,7 @@ export class TestMechanics extends Phaser.Scene {
             endFrame: 116
         });
 
-        this.load.spritesheet("health+-ts", "assets/Furnitures.png", {
+        this.load.spritesheet("healthItem-ts", "assets/Furnitures.png", {
             frameWidth: 32, 
             frameHeight: 32, 
             spacing: 0, 
@@ -292,7 +307,7 @@ export class TestMechanics extends Phaser.Scene {
             endFrame: 228
         });
 
-        this.load.spritesheet("speed+-ts", "assets/Furnitures.png", {
+        this.load.spritesheet("speedItem-ts", "assets/Furnitures.png", {
             frameWidth: 32, 
             frameHeight: 32, 
             spacing: 0, 
@@ -319,8 +334,8 @@ export class TestMechanics extends Phaser.Scene {
 
         // Object Layers
         this.bowlsObj = this.tempMap.createFromObjects("foodBowls", {gid : 19, key: "foodBowls-ts"});
-        this.healthItemObj = this.tempMap.createFromObjects("health+", {gid : 248, key: "health+-ts"});
-        this.speedItemObj = this.tempMap.createFromObjects("speed+", {gid : 262, key: "speed+-ts"});
+        this.healthItemObj = this.tempMap.createFromObjects("healthItem", {gid : 248, key: "healthItem-ts"});
+        this.speedItemObj = this.tempMap.createFromObjects("speedItem", {gid : 262, key: "speedItem-ts"});
         this.cheeseObj = this.tempMap.createFromObjects("cheese", {gid : 136, key : "cheese-ts"});
 
         // --------------- Timer ---------------
@@ -331,10 +346,10 @@ export class TestMechanics extends Phaser.Scene {
         // Temporary as a cat (change to mouse later)
         this.player = this.physics.add.sprite(350,600,"mouse-ts");
         // this.player.setCollideWorldBounds(true);
-        this.player.speed = 50;
+        this.player.speed = 500;
         this.player.health = 5.00;
 
-        // --------------- Enemy / Trap ---------------
+        // --------------- Cat ---------------
 
         this.cat = this.physics.add.sprite(500, 600, "cat-ts");
 

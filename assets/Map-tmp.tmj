@@ -113,7 +113,7 @@
         {
          "draworder":"topdown",
          "id":7,
-         "name":"health+",
+         "name":"healthItem",
          "objects":[
                 {
                  "gid":248,
@@ -136,7 +136,7 @@
         {
          "draworder":"topdown",
          "id":8,
-         "name":"speed+",
+         "name":"speedItem",
          "objects":[
                 {
                  "gid":262,

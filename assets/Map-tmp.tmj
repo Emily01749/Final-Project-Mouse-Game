@@ -135,6 +135,53 @@
         }, 
         {
          "draworder":"topdown",
+         "id":9,
+         "name":"scoreItem",
+         "objects":[
+                {
+                 "gid":232,
+                 "height":32,
+                 "id":33,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":607.023402909551,
+                 "y":610.560404807084
+                }, 
+                {
+                 "gid":232,
+                 "height":32,
+                 "id":34,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":608.60468058191,
+                 "y":672.230234029096
+                }, 
+                {
+                 "gid":232,
+                 "height":32,
+                 "id":35,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":607.023402909551,
+                 "y":544.146742567995
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":8,
          "name":"speedItem",
          "objects":[
@@ -156,8 +203,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":9,
- "nextobjectid":33,
+ "nextlayerid":10,
+ "nextobjectid":36,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",
@@ -249,6 +296,15 @@
                 }, 
                 {
                  "id":116,
+                 "properties":[
+                        {
+                         "name":"collides",
+                         "type":"bool",
+                         "value":true
+                        }]
+                }, 
+                {
+                 "id":212,
                  "properties":[
                         {
                          "name":"collides",

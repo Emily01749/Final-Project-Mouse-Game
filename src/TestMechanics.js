@@ -39,6 +39,17 @@ export class TestMechanics extends Phaser.Scene {
         this.healthDisplayText.setScrollFactor(0);
     }
 
+    displayScore(x , y){
+
+        this.scoreDisplayText = this.add.text(x , y, "(Score): " + this.player.score, {
+            fontSize: "32px",
+            fontFamily : "Courtier New",
+            color : "black"
+        }).setOrigin(0.5);
+
+        this.scoreDisplayText.setScrollFactor(0);
+    }
+
     // -----------
     // Timer
     // -----------
@@ -199,19 +210,21 @@ export class TestMechanics extends Phaser.Scene {
         });
     }
 
-    itemsCollisions(player, healthItem, speedItem){
+    itemsCollisions(player, healthItem, speedItem, scoreItem){
 
         this.healthItemCollided = false;
         this.speedItemCollided = false;
+        this.scoreItemCollided = false;
 
         this.setupObjCollisions(healthItem);
         this.setupObjCollisions(speedItem);
+        this.setupObjCollisions(scoreItem);
 
-        this.physics.add.collider(player, healthItem, (plyr, h)=>{
+        this.physics.add.collider(player, healthItem, (plyr, hlth)=>{
             this.healthItemCollided = true;
 
-            h.setVisible(false);
-            h.body.enable = false;
+            hlth.setVisible(false);
+            hlth.body.enable = false;
 
             if(this.player.health < 5 && !(this.player.health > 5)){
                 this.player.health += 0.05;
@@ -220,14 +233,26 @@ export class TestMechanics extends Phaser.Scene {
 
         });
 
-        this.physics.add.collider(player, speedItem, (plyr, s)=>{
+        this.physics.add.collider(player, speedItem, (plyr, sped)=>{
             this.speedItemCollided = true;
 
-            s.setVisible(false);
-            s.body.enable = false;
+            sped.setVisible(false);
+            sped.body.enable = false;
 
             this.player.speed += 100;
             
+        });
+
+        this.physics.add.collider(player, scoreItem, (plyr, scre) => {
+            this.scoreItemCollided = true;
+
+            scre.setVisible(false);
+            scre.body.enable = false;
+
+            this.player.score += 1;
+
+            this.scoreDisplayText.text = "(Score): " + this.player.score;
+
         });
     }
 
@@ -315,6 +340,14 @@ export class TestMechanics extends Phaser.Scene {
             endFrame: 242
         });
 
+        this.load.spritesheet("scoreItem-ts", "assets/Furnitures.png", {
+            frameWidth: 32, 
+            frameHeight: 32, 
+            spacing: 0, 
+            startFrame: 212,
+            endFrame: 212
+        });
+
         // Level Tilemap (Subject to Change)
         this.load.tilemapTiledJSON('temporary-tilemap', 'assets/Map-tmp.tmj');
     }
@@ -336,6 +369,7 @@ export class TestMechanics extends Phaser.Scene {
         this.bowlsObj = this.tempMap.createFromObjects("foodBowls", {gid : 19, key: "foodBowls-ts"});
         this.healthItemObj = this.tempMap.createFromObjects("healthItem", {gid : 248, key: "healthItem-ts"});
         this.speedItemObj = this.tempMap.createFromObjects("speedItem", {gid : 262, key: "speedItem-ts"});
+        this.scoreItemObj = this.tempMap.createFromObjects("scoreItem", {gid : 232, key: "scoreItem-ts"});
         this.cheeseObj = this.tempMap.createFromObjects("cheese", {gid : 136, key : "cheese-ts"});
 
         // --------------- Timer ---------------
@@ -346,6 +380,7 @@ export class TestMechanics extends Phaser.Scene {
         // Temporary as a cat (change to mouse later)
         this.player = this.physics.add.sprite(350,600,"mouse-ts");
         // this.player.setCollideWorldBounds(true);
+        this.player.score = 0;
         this.player.speed = 500;
         this.player.health = 5.00;
 
@@ -359,6 +394,8 @@ export class TestMechanics extends Phaser.Scene {
         // Parameters: x, y, amount Of Player Health
         this.displayHealth(400, 170, this.player.health);
 
+        this.displayScore(870, 170, this.player.health);
+
         // Player collides with cat bowl
         // Parameters: player, catBowl
         this.bowlObjCollisions(this.player, this.bowlsObj, this.player.health);
@@ -367,7 +404,7 @@ export class TestMechanics extends Phaser.Scene {
 
         this.catCollisions(this.player, this.cat, this.player.health);
 
-        this.itemsCollisions(this.player, this.healthItemObj, this.speedItemObj);
+        this.itemsCollisions(this.player, this.healthItemObj, this.speedItemObj, this.scoreItemObj);
 
     }
 

@@ -151,11 +151,15 @@ export class TestMechanics extends Phaser.Scene {
     // -----------
     // Collisions
     // -----------
+
+    setupSpriteCollisions(sprite){
+        this.physics.world.enable(sprite);
+        sprite.body.allowGravity = false;
+        sprite.body.immovable = true;
+    }
     setupObjCollisions(objects){
         objects.forEach(obj => {
-            this.physics.world.enable(obj);
-            obj.body.allowGravity = false;
-            obj.body.immovable = true;
+            this.setupSpriteCollisions(obj);
         });
     }
 
@@ -178,7 +182,13 @@ export class TestMechanics extends Phaser.Scene {
         this.physics.add.collider(player, catBowl, (player, bowl)=>{
             this.bowlCollided = true;
 
-            this.player.health -= 0.05;
+            
+            if(this.player.health <= 0){
+                this.player.health = 0;
+            }
+            else{
+                this.player.health -= 0.05;
+            }
 
             this.healthDisplayText.text = "(Health Bar): " + this.player.health.toFixed(2);
 
@@ -190,7 +200,7 @@ export class TestMechanics extends Phaser.Scene {
     catCollisions(player, cat){
 
         this.catCollided = false;
-        player.body.onOverlap = true;
+        /*player.body.onOverlap = true;
 
         this.physics.add.overlap(player, cat, (p, c) => {
             this.catCollided = true;
@@ -207,7 +217,30 @@ export class TestMechanics extends Phaser.Scene {
 
             this.healthDisplayText.text = "(Health Bar): " + this.player.health.toFixed(2);
 
+        });*/
+
+        this.setupSpriteCollisions(cat);
+
+        this.physics.add.collider(player, cat, (p, c) => {
+
+            this.catCollided = true;
+
+            c.setAlpha(0.5);
+
+            if(this.player.health <= 0){
+                this.player.health = 0
+            }
+            else{
+                this.player.health -= 0.05;
+            }
+
+            this.healthDisplayText.text = "(Health Bar): " + this.player.health.toFixed(2);
+
+            this.gameOver();
+
         });
+
+
     }
 
     itemsCollisions(player, healthItem, speedItem, scoreItem){
@@ -265,9 +298,17 @@ export class TestMechanics extends Phaser.Scene {
     }
 
     gameOver(){
-        if(this.player.health <= 0 || this.initialTime == 0){
-            this.scene.start("GameOver");
-        }
+
+        this.time.addEvent({
+            delay: 4570,
+            loop: false,
+            callback: () => {
+                if(this.player.health <= 0 || this.initialTime == 0){
+                    this.scene.start("GameOver");
+                }
+            },
+            callbackScope: this
+        });
     }
 
 
@@ -420,12 +461,14 @@ export class TestMechanics extends Phaser.Scene {
         this.camera(this.tempMap, this.player, 1.55);
 
         // Moves the player; Keyboard Controls: W A S D
-        // Parameters: acceleration (speed)
+        // Parameters: acceleration (player speed)
         this.playerMovement(this.player.speed);
 
         if(this.seconds > 10){
 
-            this.physics.moveToObject(this.cat, this.player, 100);
+            this.cat.setDrag(1000);
+            this.cat.setMaxVelocity(100);
+            this.physics.moveToObject(this.cat, this.player, 70);
             
         }
 

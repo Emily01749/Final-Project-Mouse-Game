@@ -104,20 +104,21 @@ export class TestMechanics extends Phaser.Scene {
     playerMovement(speed){
 
         //Add keyboard input for player controls
-        this.playerKeys = this.input.keyboard.addKeys({up: "W", down: "S", left: "A", right: "D"});
+        this.playerKeysWSAD = this.input.keyboard.addKeys({up: "W", down: "S", left: "A", right: "D"});
+        this.playerKeysArrow = this.input.keyboard.createCursorKeys();
 
         var countDownPress = 0;
 
-        if(this.playerKeys.up.isDown){
+        if(this.playerKeysWSAD.up.isDown || this.playerKeysArrow.up.isDown){
             countDownPress++;
         }
-        if(this.playerKeys.down.isDown){
+        if(this.playerKeysWSAD.down.isDown || this.playerKeysArrow.down.isDown){
             countDownPress++;
         }
-        if(this.playerKeys.left.isDown){
+        if(this.playerKeysWSAD.left.isDown || this.playerKeysArrow.left.isDown){
             countDownPress++;
         }
-        if(this.playerKeys.right.isDown){
+        if(this.playerKeysWSAD.right.isDown || this.playerKeysArrow.right.isDown){
             countDownPress++;
         }
 
@@ -126,16 +127,16 @@ export class TestMechanics extends Phaser.Scene {
         }
 
         // Sets velocity for up, down, left, right, otherwise 0 for idle
-        if(this.playerKeys.up.isDown){
+        if(this.playerKeysWSAD.up.isDown || this.playerKeysArrow.up.isDown){
             this.player.setAccelerationY(-speed);
         }
-        if(this.playerKeys.down.isDown){
+        if(this.playerKeysWSAD.down.isDown || this.playerKeysArrow.down.isDown){
             this.player.setAccelerationY(speed);
         }
-        if(this.playerKeys.left.isDown){
+        if(this.playerKeysWSAD.left.isDown || this.playerKeysArrow.left.isDown){
             this.player.setAccelerationX(-speed);
         }
-        if(this.playerKeys.right.isDown){
+        if(this.playerKeysWSAD.right.isDown || this.playerKeysArrow.right.isDown){
             this.player.setAccelerationX(speed);
         }
         if(countDownPress == 0){

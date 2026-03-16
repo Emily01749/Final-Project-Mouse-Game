@@ -127,20 +127,20 @@ export class TestMechanics extends Phaser.Scene {
 
         // Sets velocity for up, down, left, right, otherwise 0 for idle
         if(this.playerKeys.up.isDown){
-            this.player.setVelocityY(-speed);
+            this.player.setAccelerationY(-speed);
         }
         if(this.playerKeys.down.isDown){
-            this.player.setVelocityY(speed);
+            this.player.setAccelerationY(speed);
         }
         if(this.playerKeys.left.isDown){
-            this.player.setVelocityX(-speed);
+            this.player.setAccelerationX(-speed);
         }
         if(this.playerKeys.right.isDown){
-            this.player.setVelocityX(speed);
+            this.player.setAccelerationX(speed);
         }
         if(countDownPress == 0){
-            this.player.setVelocityX(0);
-            this.player.setVelocityY(0);
+            this.player.setAccelerationX(0);
+            this.player.setAccelerationY(0);
         }
     }
 
@@ -375,13 +375,19 @@ export class TestMechanics extends Phaser.Scene {
         // --------------- Timer ---------------
         this.createTimer(650, 170);
 
+        this.nextRespawnTime = 60 - 10;
+
         // --------------- Player ---------------
 
         // Temporary as a cat (change to mouse later)
         this.player = this.physics.add.sprite(350,600,"mouse-ts");
-        // this.player.setCollideWorldBounds(true);
+
+        //Adjusts player movment
+        this.player.speed = 2000;
+        this.player.setDrag(10000);
+        this.player.setMaxVelocity(250);
+
         this.player.score = 0;
-        this.player.speed = 500;
         this.player.health = 5.00;
 
         // --------------- Cat ---------------
@@ -414,13 +420,28 @@ export class TestMechanics extends Phaser.Scene {
         this.camera(this.tempMap, this.player, 1.55);
 
         // Moves the player; Keyboard Controls: W A S D
-        // Parameters: speed
+        // Parameters: acceleration (speed)
         this.playerMovement(this.player.speed);
 
         if(this.seconds > 10){
 
             this.physics.moveToObject(this.cat, this.player, 100);
             
+        }
+
+        if(this.initialTime < this.nextRespawnTime){
+
+            this.nextRespawnTime = this.nextRespawnTime - 10;
+
+            this.speedItemObj.forEach(sped => {
+                sped.setVisible(true);
+                sped.body.enable = true;
+            });
+
+            this.healthItemObj.forEach(hlth => {
+                hlth.setVisible(true);
+                hlth.body.enable = true;
+            });
         }
 
         /*else{
@@ -431,7 +452,7 @@ export class TestMechanics extends Phaser.Scene {
         //GameOver when timer is 00:00
         this.gameOver(); //checks player health & timer
 
-        this.testCollision();
+        //this.testCollision();
        
     }
 

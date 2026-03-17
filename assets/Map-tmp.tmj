@@ -89,6 +89,29 @@
         }, 
         {
          "draworder":"topdown",
+         "id":10,
+         "name":"fallingItem",
+         "objects":[
+                {
+                 "gid":136,
+                 "height":32,
+                 "id":36,
+                 "name":"",
+                 "rotation":0,
+                 "type":"",
+                 "visible":true,
+                 "width":32,
+                 "x":58.6031746031746,
+                 "y":447.746031746032
+                }],
+         "opacity":1,
+         "type":"objectgroup",
+         "visible":true,
+         "x":0,
+         "y":0
+        }, 
+        {
+         "draworder":"topdown",
          "id":6,
          "name":"cheese",
          "objects":[
@@ -124,8 +147,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":319.400314563605,
-                 "y":576.376723847965
+                 "x":319.4,
+                 "y":576.377
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -147,8 +170,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":607.023402909551,
-                 "y":610.560404807084
+                 "x":607.023,
+                 "y":610.56
                 }, 
                 {
                  "gid":232,
@@ -159,8 +182,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":608.60468058191,
-                 "y":672.230234029096
+                 "x":608.605,
+                 "y":672.23
                 }, 
                 {
                  "gid":232,
@@ -171,8 +194,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":607.023402909551,
-                 "y":544.146742567995
+                 "x":607.023,
+                 "y":544.147
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -194,8 +217,8 @@
                  "type":"",
                  "visible":true,
                  "width":32,
-                 "x":415.191223983513,
-                 "y":576.2114390665
+                 "x":415.191,
+                 "y":576.211
                 }],
          "opacity":1,
          "type":"objectgroup",
@@ -203,8 +226,8 @@
          "x":0,
          "y":0
         }],
- "nextlayerid":10,
- "nextobjectid":36,
+ "nextlayerid":11,
+ "nextobjectid":37,
  "orientation":"orthogonal",
  "renderorder":"right-down",
  "tiledversion":"1.11.2",

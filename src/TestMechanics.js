@@ -197,6 +197,28 @@ export class TestMechanics extends Phaser.Scene {
         });
     }
 
+    fallingObjCollision(player, falling){
+        this.fallingCollided = false;
+        this.setupObjCollisions(falling);
+
+        this.physics.add.collider(player, falling, (player, fall)=> {
+
+            this.fallingCollided = true;
+
+            if(this.player.health <= 0){
+                this.player.health = 0;
+            }
+            else{
+                this.player.health -= 0.05;
+            }
+
+            this.healthDisplayText.text = "(Health Bar): " + this.player.health.toFixed(2);
+
+            this.gameOver();
+
+        });
+    }
+
     catCollisions(player, cat){
 
         this.catCollided = false;
@@ -375,6 +397,14 @@ export class TestMechanics extends Phaser.Scene {
             endFrame: 0
         });
 
+        this.load.spritesheet("fallingObsticle-ts", "assets/Furnitures.png", {
+            frameWidth: 32, 
+            frameHeight: 32, 
+            spacing: 0, 
+            startFrame: 116,
+            endFrame: 116
+        });
+
         this.load.spritesheet("cheese-ts", "assets/Furnitures.png", {
             frameWidth: 32, 
             frameHeight: 32, 
@@ -429,6 +459,7 @@ export class TestMechanics extends Phaser.Scene {
         this.healthItemObj = this.tempMap.createFromObjects("healthItem", {gid : 248, key: "healthItem-ts"});
         this.speedItemObj = this.tempMap.createFromObjects("speedItem", {gid : 262, key: "speedItem-ts"});
         this.scoreItemObj = this.tempMap.createFromObjects("scoreItem", {gid : 232, key: "scoreItem-ts"});
+        this.fallingObstObj = this.tempMap.createFromObjects("fallingItem", {gid : 136, key : "cheese-ts"});
         this.cheeseObj = this.tempMap.createFromObjects("cheese", {gid : 136, key : "cheese-ts"});
 
         // --------------- Timer ---------------
@@ -471,6 +502,8 @@ export class TestMechanics extends Phaser.Scene {
 
         this.itemsCollisions(this.player, this.healthItemObj, this.speedItemObj, this.scoreItemObj);
 
+        this.fallingObjCollision(this.player, this.fallingObstObj);
+
     }
 
     update() {
@@ -504,6 +537,39 @@ export class TestMechanics extends Phaser.Scene {
                 hlth.body.enable = true;
             });
         }
+
+        this.countFall = 0;
+
+        this.fallingObstObj.forEach(fall => {
+            fall.body.enable = true;
+            this.dist = Phaser.Math.Distance.BetweenPoints(this.player, fall);
+
+            console.log(this.dist);
+            if(this.dist < 100){
+                fall.body.setDrag(100);
+                fall.body.setMaxVelocity(7000);
+
+                if(this.dist == 100){
+                    fall.body.setVelocityX(0);
+                    fall.body.setVelocityY(0);
+                }
+
+                if(this.fallingCollided){
+                    fall.body.enable = false;
+                }
+
+                //fall.body.x = this.player.x - 40;
+
+                this.physics.moveToObject(fall, this.player, 30);
+            }
+
+            /*if(this.dist == 100){
+                fall.body.setVelocityX(0);
+                fall.body.setVelocityY(0);
+            }*/
+        });
+
+        //this.dist = Phaser.Math.Distance.BetweenPoints(this.player, this.fallingObstObj);
 
         /*else{
             this.cat.setVelocityX(0);

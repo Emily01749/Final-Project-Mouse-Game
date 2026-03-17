@@ -13,8 +13,8 @@ const config = {
     title: 'CMPM 176 Mouse Game',
     description: '',
     parent: 'game-container',
-    width: 1270,
-    height: 720,
+    width: 320,
+    height: 320,
     backgroundColor: '#000000',
     pixelArt: false,
     scene: [

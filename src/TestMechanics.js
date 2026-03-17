@@ -31,7 +31,7 @@ export class TestMechanics extends Phaser.Scene {
     displayHealth( x , y){
 
         this.healthDisplayText = this.add.text(x , y, "(Health Bar): " + this.player.health, {
-            fontSize: "32px",
+            fontSize: "15px",
             fontFamily : "Courtier New",
             color : "black"
         }).setOrigin(0.5);
@@ -42,7 +42,7 @@ export class TestMechanics extends Phaser.Scene {
     displayScore(x , y){
 
         this.scoreDisplayText = this.add.text(x , y, "(Score): " + this.player.score, {
-            fontSize: "32px",
+            fontSize: "15px",
             fontFamily : "Courtier New",
             color : "black"
         }).setOrigin(0.5);
@@ -60,7 +60,7 @@ export class TestMechanics extends Phaser.Scene {
         this.initialTime = 60;
 
         this.timerText = this.add.text(x , y, "(Time): " + this.formatTimer(this.initialTime), {
-            fontSize: "32px",
+            fontSize: "15px",
             fontFamily : "Courtier New",
             color : "black"
         }).setOrigin(0.5);
@@ -174,13 +174,13 @@ export class TestMechanics extends Phaser.Scene {
         });
     }
 
-    bowlObjCollisions(player, catBowl){
+    obsticleObjCollisions(player, obsticle){
 
-        this.bowlCollided = false;
-        this.setupObjCollisions(catBowl);
+        this.obsticleCollided = false;
+        this.setupObjCollisions(obsticle);
    
-        this.physics.add.collider(player, catBowl, (player, bowl)=>{
-            this.bowlCollided = true;
+        this.physics.add.collider(player, obsticle, (player, obst)=>{
+            this.obsticleCollided = true;
 
             
             if(this.player.health <= 0){
@@ -265,13 +265,14 @@ export class TestMechanics extends Phaser.Scene {
 
     }
 
-    itemsCollisions(player, healthItem, speedItem, scoreItem){
+    itemsCollisions(player, healthItem, healthItem2, speedItem, scoreItem){
 
         this.healthItemCollided = false;
         this.speedItemCollided = false;
         this.scoreItemCollided = false;
 
         this.setupObjCollisions(healthItem);
+        this.setupObjCollisions(healthItem2);
         this.setupObjCollisions(speedItem);
         this.setupObjCollisions(scoreItem);
 
@@ -289,6 +290,19 @@ export class TestMechanics extends Phaser.Scene {
                 this.player.health += 0.05;
                 this.healthDisplayText.text = "(Health Bar): " + this.player.health.toFixed(2);
             }
+
+        });
+
+        this.physics.add.collider(player, healthItem2, (plyr, hlth) => {
+
+            hlth.setVisible(false);
+            hlth.body.enable = false;
+
+            if(this.player.health < 5 && !(this.player.health > 5)){
+                this.player.health += 0.20;
+                this.healthDisplayText.text = "(Health Bar): " + this.player.health.toFixed(2);
+            }
+
 
         });
 
@@ -405,13 +419,13 @@ export class TestMechanics extends Phaser.Scene {
             endFrame: 116
         });
 
-        this.load.spritesheet("cheese-ts", "assets/Furnitures.png", {
+        /*this.load.spritesheet("cheese-ts", "assets/Furnitures.png", {
             frameWidth: 32, 
             frameHeight: 32, 
             spacing: 0, 
             startFrame: 116,
             endFrame: 116
-        });
+        });*/
 
         this.load.spritesheet("healthItem-ts", "assets/Furnitures.png", {
             frameWidth: 32, 
@@ -437,33 +451,121 @@ export class TestMechanics extends Phaser.Scene {
             endFrame: 212
         });
 
-        // Level Tilemap (Subject to Change)
-        this.load.tilemapTiledJSON('temporary-tilemap', 'assets/Map-tmp.tmj');
+
+
+
+        this.load.spritesheet("floors&walls-ts", "assets/TopDownHouse_FloorsAndWalls.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+
+        this.load.spritesheet("furniture-ts", "assets/TopDownHouse_FurnitureState1.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+
+        this.load.spritesheet("smallItems-ts", "assets/TopDownHouse_SmallItems.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+
+        this.load.spritesheet("cheese-ts", "assets/maasdam.png", {
+            frameWidth: 16,
+            frameHeight: 16,
+        });
+
+        // Level Tilemap
+        this.load.tilemapTiledJSON('level3', 'assets/Level3.tmj')
+    }
+
+    objTexture(dict, layer, tilesheet){
+
+        this.objTiles = [];
+
+        for(let i = 0; i < dict["gid"].length; i++){
+            console.log(`Gid: ${dict["gid"][i]} Frame: ${dict["frame"][i]}`);
+
+            this.objName = this.level3Map.createFromObjects(layer, {gid: dict["gid"][i], frame: dict["frame"][i], key : tilesheet});
+            
+
+            this.objTiles.push(this.objName);
+        }
+        
+        return this.objTiles;
+
     }
 
     create() {
 
         // --------------- TileMap ---------------
-        this.tempMap = this.make.tilemap({key: 'temporary-tilemap'});
+        this.level3Map = this.make.tilemap({key: 'level3'})
 
         // ---------------
         // Tilemap Layers
         // ---------------
 
         // Tile Layers
-        this.floor = this.tempMap.addTilesetImage('Floor', 'floors-ts');
-        this.floorLayer = this.tempMap.createLayer("floor", this.floor);
+        this.bg = this.level3Map.addTilesetImage("TopDownHouse_FloorsAndWalls", "floors&walls-ts");
+        this.bgLayer = this.level3Map.createLayer(this.background, this.bg);
 
         // Object Layers
-        this.bowlsObj = this.tempMap.createFromObjects("foodBowls", {gid : 19, key: "foodBowls-ts"});
-        this.healthItemObj = this.tempMap.createFromObjects("healthItem", {gid : 248, key: "healthItem-ts"});
-        this.speedItemObj = this.tempMap.createFromObjects("speedItem", {gid : 262, key: "speedItem-ts"});
-        this.scoreItemObj = this.tempMap.createFromObjects("scoreItem", {gid : 232, key: "scoreItem-ts"});
-        this.fallingObstObj = this.tempMap.createFromObjects("fallingItem", {gid : 136, key : "cheese-ts"});
-        this.cheeseObj = this.tempMap.createFromObjects("cheese", {gid : 136, key : "cheese-ts"});
+        this.cheeseObj = this.level3Map.createFromObjects("cheese", {gid : 227, key : "cheese-ts"});
+        this.mealObj = this.level3Map.createFromObjects("mealDish", {gid : 196, frame: 33, key : "smallItems-ts"});
+        this.soupObj = this.level3Map.createFromObjects("soup", {gid : 201, frame: 38, key : "smallItems-ts"});
+        this.duckObj = this.level3Map.createFromObjects("ducks", {gid : 167, frame: 4, key : "smallItems-ts"});
+        this.redJarObj = this.level3Map.createFromObjects("redJar", {gid : 220, frame: 57, key : "smallItems-ts"});
+        this.clockObj = this.level3Map.createFromObjects("clockFall", {gid : 176, frame: 13, key : "smallItems-ts"});
+
+        console.log(this.mealObj);
+        this.tableTexture = {
+            gid: [280, 281, 293, 294, 306, 307],
+            frame: [52, 53, 65, 66, 78, 79]
+        }
+        this.stoolTexture = {
+            gid: [273, 272, 259, 260],
+            frame: [45, 44, 31, 32]
+        }
+        this.nightStandTexture = {
+            gid: [271, 270, 257, 258],
+            frame: [43, 42, 29, 30]
+        }
+        this.nightStandTexture = {
+            gid: [271, 270, 257, 258],
+            frame: [43, 42, 29, 30]
+        }
+        this.bookShelfTexture = {
+            gid : [286, 287, 288, 299, 300, 301, 312, 313, 314],
+            frame: [58, 59, 60, 71, 72, 73, 84, 85, 86]
+        }
+        this.plantTexture = {
+            gid: [371, 358],
+            frame: [143, 130]
+        }
+        this.lampTexture = {
+            gid: [449, 436],
+            frame: [221, 208]
+        }
+        this.cabnetTexture = {
+            gid : [319, 320, 332, 333, 345, 346],
+            frame : [91, 92, 104, 105, 117, 118]
+        }
+
+        this.couchTexture = {
+            gid : [363, 364, 365, 366, 376, 377, 378, 379],
+            frame : [135, 136, 137, 138, 148, 149, 150, 151]
+        }
+
+        this.tableObj = this.objTexture(this.tableTexture, "table", "furniture-ts");
+        this.stoolObj = this.objTexture(this.stoolTexture, "stool", "furniture-ts");
+        this.nightstandObj = this.objTexture(this.nightStandTexture, "nightstand" ,"furniture-ts");
+        this.bookshelfObj = this.objTexture(this.bookShelfTexture, "bookshelf", "furniture-ts");
+        this.plantObj = this.objTexture(this.plantTexture, "plant", "furniture-ts");
+        this.lampObj = this.objTexture(this.lampTexture, "lamp", "furniture-ts");
+        this.cabnetObj = this.objTexture(this.cabnetTexture, "cabnets", "furniture-ts");
+        this.couchObj = this.objTexture(this.couchTexture, "couch", "furniture-ts");
 
         // --------------- Timer ---------------
-        this.createTimer(650, 170);
+        this.createTimer(270, 20);
 
         this.nextRespawnTime = 60 - 10;
 
@@ -488,28 +590,55 @@ export class TestMechanics extends Phaser.Scene {
 
         // Display Health Bar
         // Parameters: x, y, amount Of Player Health
-        this.displayHealth(400, 170, this.player.health);
+        this.displayHealth(60, 20, this.player.health);
 
-        this.displayScore(870, 170, this.player.health);
+        this.displayScore(160, 20, this.player.health);
 
         // Player collides with cat bowl
         // Parameters: player, catBowl
-        this.bowlObjCollisions(this.player, this.bowlsObj, this.player.health);
+        //this.bowlObjCollisions(this.player, this.bowlsObj, this.player.health);
 
         this.cheeseObjCollisions(this.player, this.cheeseObj);
 
         this.catCollisions(this.player, this.cat, this.player.health);
 
-        this.itemsCollisions(this.player, this.healthItemObj, this.speedItemObj, this.scoreItemObj);
+        this.itemsCollisions(this.player, this.soupObj, this.mealObj, this.redJarObj, this.duckObj);
 
-        this.fallingObjCollision(this.player, this.fallingObstObj);
+        this.couchObj.forEach(couch => {
+            this.obsticleObjCollisions(this.player, couch);
+        });
+        this.tableObj.forEach(table => {
+            this.obsticleObjCollisions(this.player, table);
+        });
+        this.stoolObj.forEach(stool => {
+            this.obsticleObjCollisions(this.player, stool);
+        });
+        this.nightstandObj.forEach(stand => {
+            this.obsticleObjCollisions(this.player, stand);
+        });
+        this.bookshelfObj.forEach(shelf => {
+            this.obsticleObjCollisions(this.player, shelf);
+        });
+        this.plantObj.forEach(plant => {
+            this.obsticleObjCollisions(this.player, plant);
+        });
+        this.lampObj.forEach(lamp => {
+            this.obsticleObjCollisions(this.player, lamp);
+        });
+        this.cabnetObj.forEach(cabnet => {
+            this.obsticleObjCollisions(this.player, cabnet);
+        });
+
+
+
+        //this.fallingObjCollision(this.player, this.fallingObstObj);
 
     }
 
     update() {
         // Sets up the Camera
         // Parameters: tilemap, player, zoom
-        this.camera(this.tempMap, this.player, 1.55);
+        this.camera(this.level3Map, this.player, 1);
 
         // Moves the player; Keyboard Controls: W A S D
         // Parameters: acceleration (player speed)
@@ -523,7 +652,7 @@ export class TestMechanics extends Phaser.Scene {
             
         }
 
-        if(this.initialTime < this.nextRespawnTime){
+        /*if(this.initialTime < this.nextRespawnTime){
 
             this.nextRespawnTime = this.nextRespawnTime - 10;
 
@@ -558,23 +687,9 @@ export class TestMechanics extends Phaser.Scene {
                     fall.body.enable = false;
                 }
 
-                //fall.body.x = this.player.x - 40;
-
                 this.physics.moveToObject(fall, this.player, 30);
             }
-
-            /*if(this.dist == 100){
-                fall.body.setVelocityX(0);
-                fall.body.setVelocityY(0);
-            }*/
-        });
-
-        //this.dist = Phaser.Math.Distance.BetweenPoints(this.player, this.fallingObstObj);
-
-        /*else{
-            this.cat.setVelocityX(0);
-            this.cat.setVelocityY(0);
-        }*/
+        });*/
 
         //GameOver when timer is 00:00
         this.gameOver(); //checks player health & timer

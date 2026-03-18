@@ -14,14 +14,14 @@ export class TestLevelCompleted extends Phaser.Scene {
         console.log(this.bestTime);
         console.log(this.bestScore);
 
-        this.add.text(400, 170, "Time: " + this.bestTime, {
-            fontSize: "32px",
+        this.add.text(270, 20, "Time: " + this.bestTime, {
+            fontSize: "15px",
             fontFamily : "Courtier New",
             color : "white"
         });
 
-        this.add.text(870, 170, "Score: " + this.bestScore, {
-            fontSize: "32px",
+        this.add.text(160, 20, "Score: " + this.bestScore, {
+            fontSize: "15px",
             fontFamily : "Courtier New",
             color : "white"
         });

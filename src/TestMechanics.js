@@ -142,6 +142,15 @@ export class TestMechanics extends Phaser.Scene {
             this.player.setAccelerationX(0);
             this.player.setAccelerationY(0);
         }
+
+        if(this.initialTime > this.paralzedUntil){
+            this.player.angle += 30;
+            this.player.setAccelerationX(0);
+            this.player.setAccelerationY(0);
+        }
+        else{
+            this.player.angle = 0;
+        }
     }
 
     // -----------------------------------------------------------------------------
@@ -201,7 +210,9 @@ export class TestMechanics extends Phaser.Scene {
         this.fallingCollided = false;
         this.setupObjCollisions(falling);
 
-        this.physics.add.collider(player, falling, (player, fall)=> {
+        player.body.onOverlap = true;
+
+        this.physics.add.overlap(player, falling, (player, fall)=> {
 
             this.fallingCollided = true;
 
@@ -222,43 +233,32 @@ export class TestMechanics extends Phaser.Scene {
     catCollisions(player, cat){
 
         this.catCollided = false;
-        /*player.body.onOverlap = true;
-
-        this.physics.add.overlap(player, cat, (p, c) => {
-            this.catCollided = true;
-
-            c.setAlpha(0.5);
-
-            //if(this.player.health > 0){
-            this.player.health -= 0.05;
-            //}
-            //else{
-            //    this.player.health = 0;
-            //    this.gameOver();
-            //}
-
-            this.healthDisplayText.text = "(Health Bar): " + this.player.health.toFixed(2);
-
-        });*/
 
         this.setupSpriteCollisions(cat);
+        player.body.onOverlap = true;
 
-        this.physics.add.collider(player, cat, (p, c) => {
+        this.physics.add.overlap(player, cat, (p, c) => {
 
             this.catCollided = true;
 
             c.setAlpha(0.5);
 
-            if(this.player.health <= 0){
+            /*if(this.player.health <= 0){
                 this.player.health = 0
             }
             else{
                 this.player.health -= 0.05;
-            }
+            }*/
 
-            this.healthDisplayText.text = "(Health Bar): " + this.player.health.toFixed(2);
+            //this.healthDisplayText.text = "(Health Bar): " + this.player.health.toFixed(2);
 
-            this.gameOver();
+            //this.gameOver();
+
+            this.paralzedUntil = this.initialTime - 3;
+
+            cat.setVelocityX(500);
+
+            this.resetClocks();
 
         });
 
@@ -335,6 +335,17 @@ export class TestMechanics extends Phaser.Scene {
             this.scoreDisplayText.text = "(Score): " + this.player.score;
 
         });
+    }
+
+    resetClocks(){
+        this.clockObj.forEach(clock => {
+
+            if (Math.random() < 0.1){
+                clock.body.y = 800;
+            }
+
+        });
+
     }
 
     // ------------------------------------------------------------------------------
@@ -483,7 +494,7 @@ export class TestMechanics extends Phaser.Scene {
         this.objTiles = [];
 
         for(let i = 0; i < dict["gid"].length; i++){
-            console.log(`Gid: ${dict["gid"][i]} Frame: ${dict["frame"][i]}`);
+            //console.log(`Gid: ${dict["gid"][i]} Frame: ${dict["frame"][i]}`);
 
             this.objName = this.level3Map.createFromObjects(layer, {gid: dict["gid"][i], frame: dict["frame"][i], key : tilesheet});
             
@@ -497,6 +508,8 @@ export class TestMechanics extends Phaser.Scene {
 
     create() {
 
+        this.physics.world.setBounds( 0, 0, 715, 620);
+
         // --------------- TileMap ---------------
         this.level3Map = this.make.tilemap({key: 'level3'})
 
@@ -506,7 +519,15 @@ export class TestMechanics extends Phaser.Scene {
 
         // Tile Layers
         this.bg = this.level3Map.addTilesetImage("TopDownHouse_FloorsAndWalls", "floors&walls-ts");
-        this.bgLayer = this.level3Map.createLayer(this.background, this.bg);
+        this.bgLayer = this.level3Map.createLayer("background", this.bg);
+        
+        this.border = this.level3Map.addTilesetImage("TopDownHouse_FloorsAndWalls", "floors&walls-ts");
+        this.borderLayer = this.level3Map.createLayer("border", this.border);
+
+        this.borderLayer.setCollisionByProperty({ collides: true });
+
+        this.decor = this.level3Map.addTilesetImage("TopDownHouse_FurnitureState1", "furniture-ts");
+        this.decorLayer = this.level3Map.createLayer("decor", this.decor);
 
         // Object Layers
         this.cheeseObj = this.level3Map.createFromObjects("cheese", {gid : 227, key : "cheese-ts"});
@@ -516,7 +537,6 @@ export class TestMechanics extends Phaser.Scene {
         this.redJarObj = this.level3Map.createFromObjects("redJar", {gid : 220, frame: 57, key : "smallItems-ts"});
         this.clockObj = this.level3Map.createFromObjects("clockFall", {gid : 176, frame: 13, key : "smallItems-ts"});
 
-        console.log(this.mealObj);
         this.tableTexture = {
             gid: [280, 281, 293, 294, 306, 307],
             frame: [52, 53, 65, 66, 78, 79]
@@ -550,9 +570,17 @@ export class TestMechanics extends Phaser.Scene {
             frame : [91, 92, 104, 105, 117, 118]
         }
 
-        this.couchTexture = {
+        this.couchFrontViewTexture = {
             gid : [363, 364, 365, 366, 376, 377, 378, 379],
             frame : [135, 136, 137, 138, 148, 149, 150, 151]
+        }
+        this.couchBackViewTexture = {
+            gid : [359, 360, 361, 362, 372, 373, 374, 375],
+            frame : [131, 132, 133, 134, 144, 145, 146, 147]
+        }
+        this.couchSideViewTexture = {
+            gid : [384, 385, 397, 398, 410, 411, 423, 424],
+            frame : [156, 157, 169, 170, 182, 183, 195, 196]
         }
 
         this.tableObj = this.objTexture(this.tableTexture, "table", "furniture-ts");
@@ -562,17 +590,24 @@ export class TestMechanics extends Phaser.Scene {
         this.plantObj = this.objTexture(this.plantTexture, "plant", "furniture-ts");
         this.lampObj = this.objTexture(this.lampTexture, "lamp", "furniture-ts");
         this.cabnetObj = this.objTexture(this.cabnetTexture, "cabnets", "furniture-ts");
-        this.couchObj = this.objTexture(this.couchTexture, "couch", "furniture-ts");
+        this.couchFrontObj = this.objTexture(this.couchFrontViewTexture, "couchFrontview", "furniture-ts");
+        this.couchBackObj = this.objTexture(this.couchBackViewTexture, "couchBackview", "furniture-ts");
+        this.couchSideObj = this.objTexture(this.couchSideViewTexture, "couchSideview", "furniture-ts");
+
 
         // --------------- Timer ---------------
         this.createTimer(270, 20);
 
         this.nextRespawnTime = 60 - 10;
 
+        this.paralzedUntil = 1000;
+
         // --------------- Player ---------------
 
         // Mouse Sprite
         this.player = this.physics.add.sprite(350,600,"mouse-ts");
+        this.player.setScale(0.59);
+        this.player.setCollideWorldBounds(true);
 
         //Adjusts player movment
         this.player.speed = 2000;
@@ -585,6 +620,7 @@ export class TestMechanics extends Phaser.Scene {
         // --------------- Cat ---------------
 
         this.cat = this.physics.add.sprite(500, 600, "cat-ts");
+        this.cat.speed = 50;
 
         // --------------- Object Collisions ---------------
 
@@ -598,14 +634,24 @@ export class TestMechanics extends Phaser.Scene {
         // Parameters: player, catBowl
         //this.bowlObjCollisions(this.player, this.bowlsObj, this.player.health);
 
+        this.physics.add.collider(this.player, this.borderLayer);
+
         this.cheeseObjCollisions(this.player, this.cheeseObj);
 
         this.catCollisions(this.player, this.cat, this.player.health);
 
         this.itemsCollisions(this.player, this.soupObj, this.mealObj, this.redJarObj, this.duckObj);
 
-        this.couchObj.forEach(couch => {
-            this.obsticleObjCollisions(this.player, couch);
+        this.fallingObjCollision(this.player, this.clockObj);
+
+        this.couchFrontObj.forEach(couchF => {
+            this.obsticleObjCollisions(this.player, couchF);
+        });
+        this.couchBackObj.forEach(couchB => {
+            this.obsticleObjCollisions(this.player, couchB);
+        });
+        this.couchSideObj.forEach(couchS => {
+            this.obsticleObjCollisions(this.player, couchS);
         });
         this.tableObj.forEach(table => {
             this.obsticleObjCollisions(this.player, table);
@@ -629,10 +675,6 @@ export class TestMechanics extends Phaser.Scene {
             this.obsticleObjCollisions(this.player, cabnet);
         });
 
-
-
-        //this.fallingObjCollision(this.player, this.fallingObstObj);
-
     }
 
     update() {
@@ -646,50 +688,66 @@ export class TestMechanics extends Phaser.Scene {
 
         if(this.seconds > 10){
 
-            this.cat.setDrag(1000);
+            this.cat.setDrag(100);
             this.cat.setMaxVelocity(100);
-            this.physics.moveToObject(this.cat, this.player, 70);
+
+            this.catDist = Phaser.Math.Distance.BetweenPoints(this.player, this.cat);
+
+            console.log("inital: " + this.initialTime);
+            console.log("paralzed: " + this.paralzedUntil);
+
+            if(this.initialTime < this.paralzedUntil){
+                if(this.catDist < 10){
+                    this.physics.moveToObject(this.cat, this.player, 1);
+                    
+                }
+                else if(this.catDist < 500){
+                    this.physics.moveToObject(this.cat, this.player, this.cat.speed);
+                }
+            }
             
         }
 
-        /*if(this.initialTime < this.nextRespawnTime){
+        if(this.initialTime < this.nextRespawnTime){
 
             this.nextRespawnTime = this.nextRespawnTime - 10;
 
-            this.speedItemObj.forEach(sped => {
+            this.redJarObj.forEach(sped => {
                 sped.setVisible(true);
                 sped.body.enable = true;
             });
 
-            this.healthItemObj.forEach(hlth => {
+            this.soupObj.forEach(hlth => {
+                hlth.setVisible(true);
+                hlth.body.enable = true;
+            });
+            
+            this.mealObj.forEach(hlth => {
                 hlth.setVisible(true);
                 hlth.body.enable = true;
             });
         }
 
-        this.countFall = 0;
+        this.clockObj.forEach(clock => {
 
-        this.fallingObstObj.forEach(fall => {
-            fall.body.enable = true;
-            this.dist = Phaser.Math.Distance.BetweenPoints(this.player, fall);
+            clock.body.enable = true;
 
-            console.log(this.dist);
-            if(this.dist < 100){
-                fall.body.setDrag(100);
-                fall.body.setMaxVelocity(7000);
+            this.dist = Phaser.Math.Distance.BetweenPoints(this.player, clock);
 
-                if(this.dist == 100){
-                    fall.body.setVelocityX(0);
-                    fall.body.setVelocityY(0);
-                }
+            if(this.dist < 400){
+                clock.body.setDrag(100);
+                clock.body.setMaxVelocity(7000);
 
-                if(this.fallingCollided){
-                    fall.body.enable = false;
-                }
+                clock.body.setVelocityY(100);
 
-                this.physics.moveToObject(fall, this.player, 30);
             }
-        });*/
+
+        });
+
+        if(this.cat.alpha < 1){
+            this.cat.setAlpha(this.cat.alpha + 0.005);
+        }
+    
 
         //GameOver when timer is 00:00
         this.gameOver(); //checks player health & timer

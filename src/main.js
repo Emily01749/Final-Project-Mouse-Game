@@ -16,7 +16,7 @@ const config = {
     width: 320,
     height: 320,
     backgroundColor: '#000000',
-    pixelArt: false,
+    pixelArt: true,
     scene: [
         TestMechanics,
         TestGameOver,

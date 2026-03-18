@@ -1,4 +1,6 @@
-import {TestMechanics} from './TestMechanics.js'
+import { TestMechanics } from './TestMechanics.js';
+import { TestLevelCompleted } from './TestLevelCompleted.js';
+import { TestGameOver } from './TestGameOver.js';
 import { Start } from './scenes/Start.js';
 import { Level1 } from './scenes/Level1.js';
 import { Level2} from './scenes/Level2.js';
@@ -11,12 +13,14 @@ const config = {
     title: 'CMPM 176 Mouse Game',
     description: '',
     parent: 'game-container',
-    width: 1270,
-    height: 720,
+    width: 320,
+    height: 320,
     backgroundColor: '#000000',
-    pixelArt: false,
+    pixelArt: true,
     scene: [
         TestMechanics,
+        TestGameOver,
+        TestLevelCompleted,
         Start,
         Level1,
         Level2,

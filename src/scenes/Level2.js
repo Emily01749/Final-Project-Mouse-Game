@@ -30,8 +30,8 @@ export class Level2 extends Phaser.Scene {
         const Rugs = map.createLayer('rug', furniture2);
         const Ground = map.createLayer('ground', floorsWalls);
 
-       Decorations.setCollisionByProperty({collision : true});
-       this.physics.add.collider(this.player, Decorations); // <- assuming its called this.player
+        Decorations.setCollisionByProperty({collision : true});
+        this.physics.add.collider(this.player, Decorations); // <- assuming its called this.player
        
 
     }

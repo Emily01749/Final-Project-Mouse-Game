@@ -724,8 +724,8 @@ class Level3 extends Phaser.Scene {
     preload() {
 
         // Load the Mouse
-        this.load.spritesheet("mouse-ts", "assets/images/Mouse-Sheet.png", {
-            frameWidth: 32,
+        this.load.spritesheet('mouse-ts', 'assets/images/MouseSpritesheet.png', {
+            frameWidth: 32, 
             frameHeight: 32,
             spacing: 0,
             startFrame: 0,
@@ -733,10 +733,10 @@ class Level3 extends Phaser.Scene {
         });
 
         // Load the Cat from the Spritesheet
-        this.load.spritesheet("cat-ts", "assets/images/IdleCat.png", {
+        this.load.spritesheet('cat-ts', 'assets/images/JumpCatttt.png', {
             frameWidth: 32, 
-            frameHeight: 32, 
-            spacing: 0, 
+            frameHeight: 32 ,
+            spacing: 0,
             startFrame: 0,
             endFrame: 0
         });
@@ -946,8 +946,8 @@ class Level3 extends Phaser.Scene {
 
         // Mouse Sprite
         this.player = this.physics.add.sprite(350,600,"mouse-ts");
-        this.player.setScale(0.59);
-        this.player.setCollideWorldBounds(true);
+        //this.player.setScale(0.59);
+        //this.player.setCollideWorldBounds(true);
 
         //Adjusts player movment
         this.player.speed = 2000;
